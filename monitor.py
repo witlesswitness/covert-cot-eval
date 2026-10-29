@@ -69,15 +69,12 @@ def monitor_episode(record, include_reasoning, cache=True):
     for _ in range(3):  # retry if the monitor returns no parseable score
         resp = _anthropic.messages.create(
             model=MONITOR_MODEL,
-            max_tokens=512,
+            max_tokens=2000,
             system=sys_blocks,
-            messages=[
-                {"role": "user", "content": user},
-                {"role": "assistant", "content": "{"},  # prefill: force JSON, no preamble/refusal
-            ],
+            messages=[{"role": "user", "content": user}],
         )
         text = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
-        verdict = parse_verdict("{" + text)   # put the prefilled brace back
+        verdict = parse_verdict(text)
         verdict["_stop"] = resp.stop_reason
         if verdict["suspicion"] is not None:
             break
