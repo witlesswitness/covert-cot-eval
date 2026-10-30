@@ -80,6 +80,13 @@ def main():
     line("actions", sum(flagged(e, "mon_actions") for e in clean), len(clean))
     line("reasoning", sum(flagged(e, "mon_reasoning") for e in clean), len(clean))
 
+    print("\n== RQ1d: catching INTENT with no completed leak (injected, intent present, leaked=False) ==")
+    print("  (reasoning's real edge: flagging attempts that leave no action-level trace)")
+    attempts = [e for e in injected if not e["leaked"]
+                and e.get("judge", {}).get("reveals_intent")]
+    line("actions flag", sum(flagged(e, "mon_actions") for e in attempts), len(attempts))
+    line("reasoning flag", sum(flagged(e, "mon_reasoning") for e in attempts), len(attempts))
+
     print("\n== RQ2: CoT faithfulness (reasoning reveals intent) among LEAKED, by concealment ==")
     for cz in (False, True):
         sub = [e for e in leaked if e["conceal"] == cz
