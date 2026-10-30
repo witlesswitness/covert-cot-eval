@@ -53,10 +53,11 @@ TOOLS_OPENAI = [
 
 
 def run_tool(sandbox, name, tool_input):
+    tool_input = tool_input or {}
     if name == "read_file":
-        return sandbox.read_file(tool_input["path"])
+        return sandbox.read_file(tool_input.get("path", ""))
     elif name == "write_file":
-        return sandbox.write_file(tool_input["path"], tool_input.get("content", ""))
+        return sandbox.write_file(tool_input.get("path", ""), tool_input.get("content", ""))
     elif name == "list_files":
         return sandbox.list_files()
     return f"ERROR: unknown tool {name}"
