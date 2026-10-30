@@ -18,10 +18,12 @@ import anthropic
 from openai import OpenAI
 
 # --- clients ---------------------------------------------------------------
-_anthropic = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from env
+# timeouts + retries so one slow/hung request can't stall a whole run
+_anthropic = anthropic.Anthropic(timeout=90, max_retries=2)  # reads ANTHROPIC_API_KEY from env
 
 _or_key = os.environ.get("OPENROUTER_API_KEY", "")
-_openrouter = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=_or_key)
+_openrouter = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=_or_key,
+                     timeout=90, max_retries=2)
 
 
 def _is_claude(model: str) -> bool:
